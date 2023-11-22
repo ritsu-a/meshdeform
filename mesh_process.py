@@ -87,7 +87,7 @@ def save_pointcloud(centroids, filename):
     # 保存为PLY
     o3d.io.write_point_cloud(filename, pcd)
 
-def save_mesh(vertices, faces, handle_vertices,static_vertices, filename):
+def save_mesh(vertices, faces, filename):
     
     mesh = o3d.geometry.TriangleMesh()
     mesh.vertices = o3d.utility.Vector3dVector(vertices)
@@ -96,13 +96,13 @@ def save_mesh(vertices, faces, handle_vertices,static_vertices, filename):
     default_color = [0.7, 0.7, 0.7]  # 灰色
     colors = [default_color for _ in range(len(vertices))]
 
-    red_color = [1, 0, 0]  # 红色
-    for idx in handle_vertices:
-        colors[idx] = red_color
+    # red_color = [1, 0, 0]  # 红色
+    # for idx in handle_vertices:
+    #     colors[idx] = red_color
 
-    black_color = [0, 0, 0]  # 黑色
-    for idx in static_vertices:
-        colors[idx] = black_color
+    # black_color = [0, 0, 0]  # 黑色
+    # for idx in static_vertices:
+    #     colors[idx] = black_color
 
     # 将颜色分配给网格
     mesh.vertex_colors = o3d.utility.Vector3dVector(colors)
@@ -150,26 +150,41 @@ def save_mesh(vertices, faces, handle_vertices,static_vertices, filename):
 #     plt.savefig(filename)
 #     plt.close()
 
-def plt_mesh(vertices, faces, handle_vertices, static_vertices, filename):
-    # 创建一个新的图形和3D坐标轴
+def plt_meshes(meshes, filename):
+    
+        # 创建一个新的图形和3D坐标轴
     fig = plt.figure(figsize=(15, 5))
     
     # Subplot for whole mesh
     ax1 = fig.add_subplot(131, projection='3d')
     ax1.set_title('Whole Mesh')
-    plot_mesh_on_ax(vertices, ax1)
-    plot_vertices_with_arrows_on_ax(vertices, handle_vertices, ax1, 'blue')
+    plot_meshes_on_ax(meshes, ax1)
+
+        # Save figure
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()
+
+def plt_mesh(vertices, faces, filename):
+    # 创建一个新的图形和3D坐标轴
+    fig = plt.figure(figsize=(5, 5))
     
-    # Subplot for handle_vertices
-    ax2 = fig.add_subplot(132, projection='3d')
-    ax2.set_title('Handle Vertices')
-    plot_vertices_on_ax(vertices, handle_vertices, ax2, 'blue')
+    # Subplot for whole mesh
+    ax1 = fig.add_subplot(111, projection='3d')
+    ax1.set_title('Whole Mesh')
+    plot_mesh_on_ax(vertices, ax1)
+    # plot_vertices_with_arrows_on_ax(vertices, handle_vertices, ax1, 'blue')
+    
+    # # Subplot for handle_vertices
+    # ax2 = fig.add_subplot(132, projection='3d')
+    # ax2.set_title('Handle Vertices')
+    # plot_vertices_on_ax(vertices, handle_vertices, ax2, 'blue')
 
     
-    # Subplot for static_vertices
-    ax3 = fig.add_subplot(133, projection='3d')
-    ax3.set_title('Static Vertices')
-    plot_vertices_on_ax(vertices, static_vertices, ax3, 'black')
+    # # Subplot for static_vertices
+    # ax3 = fig.add_subplot(133, projection='3d')
+    # ax3.set_title('Static Vertices')
+    # plot_vertices_on_ax(vertices, static_vertices, ax3, 'black')
     
     # Save figure
     plt.tight_layout()
@@ -178,12 +193,27 @@ def plt_mesh(vertices, faces, handle_vertices, static_vertices, filename):
 
 def plot_mesh_on_ax(vertices, ax):
     ax.scatter(vertices[:, 0], vertices[:, 1], vertices[:, 2], color='red', s=1)
+    set_fixed_ax_limits(vertices, ax)
+
+
+def plot_meshes_on_ax(meshes, ax):
+    vertices = []
+    for mesh in meshes:
+        vertices.append(mesh["vertices"])
+    vertices = np.concatenate(vertices,axis=0)
+    print(vertices.shape)
+    ax.scatter(vertices[:, 0], vertices[:, 1], vertices[:, 2], color='red', s=1)
     set_ax_limits(vertices, ax)
 
 def plot_vertices_on_ax(vertices, vertex_indices, ax, color):
     for v in vertex_indices:
         ax.scatter(*vertices[v], color=color, s=1)
     set_ax_limits(vertices, ax)
+
+def set_fixed_ax_limits(vertices, ax):
+    ax.set_xlim(-1 , 1)
+    ax.set_ylim(-1 , 1)
+    ax.set_zlim(-1 , 1)
 
 def set_ax_limits(vertices, ax):
     X = vertices[:, 0]
@@ -196,6 +226,9 @@ def set_ax_limits(vertices, ax):
     ax.set_xlim(mid_x - max_range, mid_x + max_range)
     ax.set_ylim(mid_y - max_range, mid_y + max_range)
     ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+
+
 
 def plot_vertices_with_arrows_on_ax(vertices, vertex_indices, ax, color):
     for v in vertex_indices:
