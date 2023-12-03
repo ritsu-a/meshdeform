@@ -191,6 +191,48 @@ def plt_mesh(vertices, faces, filename):
     plt.savefig(filename)
     plt.close()
 
+
+def plt_mesh2(vertices1, vertices2, faces, filename):
+    # 创建一个新的图形和3D坐标轴
+    fig = plt.figure(figsize=(10, 5))
+    
+    # Subplot for whole mesh
+    ax1 = fig.add_subplot(121, projection='3d')
+    ax1.set_title('Ground Truth')
+    plot_mesh_on_ax(vertices1, ax1)
+
+    ax2 = fig.add_subplot(122, projection='3d')
+    ax2.set_title('Predict')
+    plot_mesh_on_ax(vertices2, ax2)
+    
+    # Save figure
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()
+
+
+def plt_mesh3(vertices1, vertices2,  vertices3, faces, filename):
+    # 创建一个新的图形和3D坐标轴
+    fig = plt.figure(figsize=(15, 5))
+    
+    # Subplot for whole mesh
+    ax1 = fig.add_subplot(131, projection='3d')
+    ax1.set_title('Ground Truth')
+    plot_mesh_on_ax(vertices1, ax1)
+
+    ax2 = fig.add_subplot(132, projection='3d')
+    ax2.set_title('Noisy')
+    plot_mesh_on_ax(vertices2, ax2)
+
+    ax3 = fig.add_subplot(133, projection='3d')
+    ax3.set_title('Predict')
+    plot_mesh_on_ax(vertices3, ax3)
+    
+    # Save figure
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()
+
 def plot_mesh_on_ax(vertices, ax):
     ax.scatter(vertices[:, 0], vertices[:, 1], vertices[:, 2], color='red', s=1)
     set_fixed_ax_limits(vertices, ax)

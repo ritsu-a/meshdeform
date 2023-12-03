@@ -1,9 +1,11 @@
 import numpy as np
-from mesh_process import tetrahedralize, load_mesh, compute_tetrahedron_centroids, save_pointcloud, save_mesh, plt_mesh, plt_meshes
+from utils.mesh_process import tetrahedralize, load_mesh, compute_tetrahedron_centroids, save_pointcloud, save_mesh, plt_mesh, plt_meshes, plt_mesh2
 import os
 import cv2
 
-file_list = os.listdir("./constForce")
+
+file_dir = "/share1/pengyang/hande/1205/"
+file_list = os.listdir(file_dir)
 print(len(file_list), file_list[0])
 
 
@@ -11,12 +13,15 @@ save_dir = "./test/"
 os.makedirs(save_dir, exist_ok =True)
 os.makedirs(save_dir + "imgs", exist_ok =True)
 
-meta = np.load(f"./constForce/data_0.npz")
+meta = np.load(file_dir + file_list[0])
 
 for idx in range(100):
-    verts = meta["deformed_verts"][idx]
+    verts = meta["verts"][idx]
+    noisy_pcd = meta["noisy_pcds"][idx]
+    print(verts.shape, noisy_pcd.shape)
+
     faces = meta["faces"][idx]
-    plt_mesh(verts, faces, save_dir + f"imgs/data_{idx}.png")
+    plt_mesh2(verts, noisy_pcd, faces, save_dir + f"imgs/data_{idx}.png")
     
 
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
