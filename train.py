@@ -10,6 +10,7 @@ from tqdm import tqdm
 import os
 from torch.utils.data.sampler import Sampler
 import matplotlib.pyplot as plt
+import cv2
 
 from utils.mesh_process import tetrahedralize, load_mesh, compute_tetrahedron_centroids, save_pointcloud, save_mesh, plt_mesh, plt_meshes, plt_mesh2, plt_mesh3
 
@@ -18,7 +19,7 @@ from utils.mesh_process import tetrahedralize, load_mesh, compute_tetrahedron_ce
 from pytorch3d.loss import chamfer_distance
 
 
-save_dir = "./outputs/1204/"
+save_dir = "./outputs/1205/"
 os.makedirs("./outputs/", exist_ok =True)
 os.makedirs(save_dir, exist_ok =True)
 os.makedirs(save_dir + "/video", exist_ok = True)
@@ -81,7 +82,7 @@ class IterationBasedBatchSampler(Sampler):
 
 net = AE_AtlasNet_Humans(num_points=200)
 net = net.cuda()
-max_iter = 3000
+max_iter = 20000
 
 lr = 0.001
 params = net.parameters()
@@ -93,7 +94,7 @@ dataset_train = NoisyPcdDataset(mode="train")
 print(f"Length of training dataset: {len(dataset_train)}")
 
 sampler = RandomSampler(dataset_train, replacement=False)
-batch_sampler = BatchSampler(sampler, batch_size=8, drop_last=True)
+batch_sampler = BatchSampler(sampler, batch_size=16, drop_last=True)
 batch_sampler = IterationBasedBatchSampler(
                 batch_sampler, num_iterations=max_iter, start_iter=0
             )
